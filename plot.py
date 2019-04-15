@@ -4,6 +4,14 @@ import googlemaps
 import geocoder
 import webbrowser
 import re
+import nltk
+import os
+
+
+class Path:
+    def __init__(self):
+        dirname = os.path.dirname(__file__)
+        self.testdata = os.path.join(dirname, "\\Test\\TestData\\")
 
 
 class Plot:
@@ -11,6 +19,11 @@ class Plot:
         self.gmaps = googlemaps.Client(api)
         self.__api = api
         self.header_regex = re.compile('^h[1-6]$')
+        self.link_regex = re.compile('a')
+        self.link_regex = re.compile('a')
+        self.headers = []
+        self.links = []
+        self.words_filter = nltk.corpus.stopwords.words('english')
 
     def find_place(self, locations, location_supplement=None):
         if not isinstance(locations, list):
@@ -20,7 +33,9 @@ class Plot:
         output = dict()
         for location in locations:
             print('Looking for location: {}'.format(location))
+            print(geocoder.google)
             details = geocoder.google(location, key=self.__api).json
+
             if details is not None and details['status'] == 'OK':
                 temp = self.gmaps.place(details['place'])
                 if temp['status'] == 'OK':
@@ -34,12 +49,30 @@ class Plot:
                 print("Unable to find {}".format(location))
         return output
 
-    def read_file(self, filename):
-        with open(filename, 'r') as f:
-            return f.readlines()
-
     def read_url(self, url):
         r = requests.get(url)
         bs = BS(r.text, 'html.parser')
-        headers = bs.find_all(self.header_regex)
-        return headers
+        [self.headers.append(i) for i in bs.find_all(self.header_regex)]
+        for link in bs.find_all(self.link_regex):
+            if link.has_attr('href'):
+                self.links.append(link)
+
+    def reset_attribs(self):
+        self.headers = []
+        self.links = []
+
+    def filter_list(self, bs_list, words_filter):
+        # bs_list = [header.text for header in plot.headers]
+        output = []
+        for header in bs_list:
+            temp = []
+            for word in header.split():
+
+                if word not in words_filter:
+                    temp.append(word)
+            print(temp)
+            output.append(" ".join(temp))
+        return output
+
+# with open('Bembridge Windmill geocoder.json', "w") as f:
+#     json.dump(details, f)
