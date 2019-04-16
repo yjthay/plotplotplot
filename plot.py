@@ -33,9 +33,7 @@ class Plot:
         output = dict()
         for location in locations:
             print('Looking for location: {}'.format(location))
-            print(geocoder.google)
             details = geocoder.google(location, key=self.__api).json
-
             if details is not None and details['status'] == 'OK':
                 temp = self.gmaps.place(details['place'])
                 if temp['status'] == 'OK':
