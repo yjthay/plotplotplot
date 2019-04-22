@@ -20,7 +20,6 @@ class Plot:
         self.__api = api
         self.header_regex = re.compile('^h[1-6]$')
         self.link_regex = re.compile('a')
-        self.link_regex = re.compile('a')
         self.headers = []
         self.links = []
         self.words_filter = nltk.corpus.stopwords.words('english')
@@ -72,5 +71,3 @@ class Plot:
             output.append(" ".join(temp))
         return output
 
-# with open('Bembridge Windmill geocoder.json', "w") as f:
-#     json.dump(details, f)
